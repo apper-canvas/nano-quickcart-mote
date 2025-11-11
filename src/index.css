@@ -1,0 +1,63 @@
+@import 'react-toastify/dist/ReactToastify.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+  }
+}
+
+@layer components {
+  .toast-custom {
+    @apply bg-white shadow-elevated rounded-xl border border-gray-200;
+  }
+  
+  .toast-custom .Toastify__toast-body {
+    @apply text-primary font-medium;
+  }
+  
+  .toast-custom .Toastify__close-button {
+    @apply text-gray-500 hover:text-primary;
+  }
+}
+
+/* Toast Container Styles */
+.Toastify__toast-container {
+  @apply z-[9999];
+}
+
+.Toastify__toast {
+  @apply rounded-xl shadow-elevated border border-gray-200 min-h-[64px];
+}
+
+.Toastify__toast--success {
+  @apply bg-gradient-to-r from-green-50 to-emerald-50 border-green-200;
+}
+
+.Toastify__toast--error {
+  @apply bg-gradient-to-r from-red-50 to-rose-50 border-red-200;
+}
+
+.Toastify__toast--info {
+  @apply bg-gradient-to-r from-blue-50 to-sky-50 border-blue-200;
+}
+
+.Toastify__toast-body {
+  @apply text-primary font-medium text-sm;
+}
+
+.Toastify__progress-bar {
+  @apply bg-gradient-to-r from-accent to-red-500;
+}
