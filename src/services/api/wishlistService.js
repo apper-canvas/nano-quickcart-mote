@@ -1,6 +1,7 @@
-import { getApperClient } from '@/services/apperClient';
-import { productService } from './productService';
-import { toast } from 'react-toastify';
+import { productService } from "./productService";
+import { toast } from "react-toastify";
+import React from "react";
+import { getApperClient } from "@/services/apperClient";
 export const wishlistService = {
   tableName: 'wishlist_items_c',
 
@@ -204,6 +205,7 @@ async add(productId) {
   },
 
   // Remove product from wishlist
+// Remove product from wishlist
 async remove(productId) {
     try {
       const apperClient = getApperClient();
@@ -251,8 +253,26 @@ async remove(productId) {
         return { success: false, message: deleteResponse.message };
       }
 
+      // Verify successful deletion by checking results if available
+      if (deleteResponse.results) {
+        const successful = deleteResponse.results.filter(r => r.success);
+        const failed = deleteResponse.results.filter(r => !r.success);
+        
+        if (failed.length > 0) {
+          console.error(`Failed to delete ${failed.length} wishlist items:`, failed);
+          failed.forEach(record => {
+            if (record.message) toast.error(record.message);
+          });
+          return { success: false, message: 'Failed to remove from wishlist' };
+        }
+        
+        if (successful.length === 0) {
+          return { success: false, message: 'No items were removed from wishlist' };
+        }
+      }
+
       toast.success('Removed from wishlist!');
-      return { success: true, message: 'Removed from wishlist' };
+      return { success: true, message: 'Removed from wishlist', deletedCount: response.data.length };
     } catch (error) {
       if (error.message?.includes('RLS') || error.message?.includes('policy')) {
         console.error("RLS policy error:", error.message);
@@ -260,7 +280,8 @@ async remove(productId) {
         return { success: false, message: 'Authentication required' };
       }
       console.error("Error removing from wishlist:", error?.response?.data?.message || error.message);
-      return { success: false, message: 'Failed to remove from wishlist' };
+      toast.error('Failed to remove from wishlist');
+return { success: false, message: 'Failed to remove from wishlist' };
     }
   },
 

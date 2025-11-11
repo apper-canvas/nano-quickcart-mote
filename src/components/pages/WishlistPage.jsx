@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { wishlistService } from "@/services/api/wishlistService";
 import { cn } from "@/utils/cn";
-import Button from "@/components/atoms/Button";
+import ApperIcon from "@/components/ApperIcon";
 import Loading from "@/components/ui/Loading";
 import ErrorView from "@/components/ui/ErrorView";
 import Empty from "@/components/ui/Empty";
-import ApperIcon from "@/components/ApperIcon";
 import WishlistItem from "@/components/molecules/WishlistItem";
-import { wishlistService } from "@/services/api/wishlistService";
+import Button from "@/components/atoms/Button";
 
 const WishlistPage = () => {
   const [wishlistItems, setWishlistItems] = useState([]);
@@ -108,6 +108,7 @@ const WishlistPage = () => {
         </div>
 
         {/* Content */}
+{/* Content */}
         {wishlistItems.length === 0 ? (
           <div className="max-w-md mx-auto">
             <Empty
@@ -120,7 +121,7 @@ const WishlistPage = () => {
             />
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid gap-6">
             {wishlistItems.map((item) => (
               <WishlistItem
                 key={item.Id}
@@ -131,7 +132,6 @@ const WishlistPage = () => {
           </div>
         )}
 
-        {/* Mobile Continue Shopping Button */}
         <div className="sm:hidden mt-8 text-center">
           <Button
             variant="outline"

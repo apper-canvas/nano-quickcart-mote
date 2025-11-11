@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { cn } from "@/utils/cn";
-import Button from "@/components/atoms/Button";
-import Badge from "@/components/atoms/Badge";
-import ApperIcon from "@/components/ApperIcon";
-import ConfirmationModal from "@/components/atoms/ConfirmationModal";
 import { wishlistService } from "@/services/api/wishlistService";
 import { cartService } from "@/services/api/cartService";
 import { toast } from "react-toastify";
+import { cn } from "@/utils/cn";
+import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
+import ConfirmationModal from "@/components/atoms/ConfirmationModal";
+import Badge from "@/components/atoms/Badge";
 
 const WishlistItem = ({ item, onWishlistUpdate }) => {
   const [loading, setLoading] = useState({
@@ -66,18 +66,20 @@ const handleDeleteClick = (e) => {
     setConfirmDelete({ show: true });
   };
 
-  const handleConfirmDelete = async () => {
+const handleConfirmDelete = async () => {
     setLoadingState('remove', true);
     try {
-      await wishlistService.remove(item.productId);
-      toast.success("Item removed from wishlist");
-      onWishlistUpdate && onWishlistUpdate();
-      setConfirmDelete({ show: false });
+      const result = await wishlistService.remove(item.productId);
+      if (result.success) {
+        onWishlistUpdate();
+        toast.success("Removed from wishlist");
+      }
     } catch (error) {
       toast.error("Failed to remove from wishlist");
       console.error("Error removing from wishlist:", error);
     } finally {
       setLoadingState('remove', false);
+      setConfirmDelete({ show: false });
     }
   };
 
