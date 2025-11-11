@@ -78,7 +78,7 @@ const isLowStock = product.stock < 10;
   const isOutOfStock = product.stock === 0;
   
   // Calculate discount percentage
-  const hasDiscount = product.originalPrice && product.originalPrice > product.price;
+const hasDiscount = product.originalPrice && product.originalPrice > product.price;
   const discountPercentage = hasDiscount 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;

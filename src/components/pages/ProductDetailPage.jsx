@@ -113,7 +113,7 @@ const loadProduct = async () => {
     );
   }
 
-  const isLowStock = product.stock < 10;
+const isLowStock = product.stock < 10;
   const isOutOfStock = product.stock === 0;
 
   return (
@@ -157,9 +157,9 @@ const loadProduct = async () => {
                     <div className="space-y-3">
                         <div className="flex items-center gap-2">
                             <Badge variant="secondary" size="sm">
-                                {product.category}
+{product.category}
                             </Badge>
-                            {isLowStock && !isOutOfStock && <Badge variant="warning" size="sm">Only {product.stock}left
+                            {isLowStock && !isOutOfStock && <Badge variant="warning" size="sm">Only {product.stock} left
                                                                                     </Badge>}
                             {isOutOfStock && <Badge variant="error" size="sm">Out of Stock
                                                                                     </Badge>}
@@ -195,27 +195,30 @@ const loadProduct = async () => {
                         <div className="space-y-3">
                             <div className="flex items-center gap-3 flex-wrap">
                                 {/* Check if product has discount (simulate 25% discount for products with ID divisible by 3) */}
-                                {product.Id % 3 === 0 ? <>
+{product.originalPrice && product.originalPrice > product.price ? <>
                                     {/* Current Price */}
-                                    <span className="text-5xl lg:text-6xl font-bold text-accent font-display">
-                                        {formatPrice(product.price * 0.75)}
+<span className="text-5xl lg:text-6xl font-bold text-accent font-display">
+                                        {formatPrice(product.price)}
                                     </span>
                                     {/* Original Price */}
                                     <span className="text-2xl font-semibold text-gray-500 line-through">
-                                        {formatPrice(product.price)}
+                                        {formatPrice(product.originalPrice)}
                                     </span>
                                     {/* Discount Badge */}
-                                    <Badge variant="discount" size="sm" className="px-3 py-1 text-sm">25% OFF
-                                                                                                        </Badge>
+                                    <Badge variant="discount" size="sm" className="px-3 py-1 text-sm">
+                                        {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+                                    </Badge>
                                 </> : <span className="text-5xl lg:text-6xl font-bold text-accent font-display">
                                     {formatPrice(product.price)}
                                 </span>}
                             </div>
                             {/* Savings Message */}
-                            {product.Id % 3 === 0 && <div className="flex items-center gap-2">
+{product.originalPrice && product.originalPrice > product.price && <div className="flex items-center gap-2">
                                 <ApperIcon name="CheckCircle" className="w-5 h-5 text-success" />
-                                <span className="text-success font-semibold">You save {formatPrice(product.price * 0.25)}(25%)
-                                                                                              </span>
+                                <span className="text-success font-semibold">
+                                    You save {formatPrice(product.originalPrice - product.price)} 
+                                    ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%)
+                                </span>
                             </div>}
                         </div>
                         {/* Availability Status */}
@@ -362,9 +365,9 @@ const loadProduct = async () => {
                                 <div
                                     className="flex justify-between items-center py-2 border-b border-gray-100">
                                     <span className="font-medium text-gray-600">Availability:</span>
-                                    <span
-                                        className={`px-2 py-1 rounded-full text-xs font-semibold ${product.inStock ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-                                        {product.inStock ? "In Stock" : "Out of Stock"}
+<span
+                                        className={`px-2 py-1 rounded-full text-xs font-semibold ${!isOutOfStock ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                                        {!isOutOfStock ? "In Stock" : "Out of Stock"}
                                     </span>
                                 </div>
                                 <div

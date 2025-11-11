@@ -1,4 +1,5 @@
 import { productService } from "@/services/api/productService";
+import { getApperClient } from '@/services/apperClient';
 
 class ReviewService {
   constructor() {

@@ -1,10 +1,30 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { cn } from "@/utils/cn";
-import SearchBar from "@/components/molecules/SearchBar";
-import Badge from "@/components/atoms/Badge";
-import ApperIcon from "@/components/ApperIcon";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { cartService } from "@/services/api/cartService";
+import { useAuth } from "@/layouts/Root";
+import { useSelector } from "react-redux";
+import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
+import Badge from "@/components/atoms/Badge";
+import SearchBar from "@/components/molecules/SearchBar";
+import { cn } from "@/utils/cn";
+
+const LogoutButton = () => {
+  const { logout } = useAuth();
+  const { isAuthenticated } = useSelector(state => state.user);
+  
+  if (!isAuthenticated) return null;
+  
+  return (
+    <button
+      onClick={logout}
+      className="text-primary hover:text-accent font-medium transition-colors duration-200 flex items-center gap-2"
+    >
+      <ApperIcon name="LogOut" className="w-4 h-4" />
+      Logout
+    </button>
+  );
+};
 
 const Header = ({ className }) => {
   const navigate = useNavigate();
@@ -84,7 +104,7 @@ const Header = ({ className }) => {
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
+<div className="hidden md:flex items-center gap-6">
             <Link
               to="/"
               className="text-primary hover:text-accent font-medium transition-colors duration-200"
@@ -115,6 +135,8 @@ const Header = ({ className }) => {
                 </Badge>
               )}
             </Link>
+
+            <LogoutButton />
           </div>
 
           {/* Mobile Menu Button */}
