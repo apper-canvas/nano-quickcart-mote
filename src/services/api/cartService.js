@@ -72,17 +72,37 @@ class CartService {
     }
   }
 
-  async addItem(product, quantity = 1) {
+async addItem(product, quantity = 1) {
     try {
+      // Validate product object and required properties
+      if (!product) {
+        throw new Error('Product is required');
+      }
+
+      if (!product.Id && product.Id !== 0) {
+        throw new Error('Product ID is required');
+      }
+
+      if (!product.name) {
+        throw new Error('Product name is required');
+      }
+
+      if (typeof product.price !== 'number' || product.price < 0) {
+        throw new Error('Valid product price is required');
+      }
+
+      // Convert product ID to string safely
+      const productId = product.Id.toString();
+
       const existingItemIndex = this.cartItems.findIndex(
-        item => item.productId === product.Id.toString()
+        item => item.productId === productId
       );
 
       if (existingItemIndex >= 0) {
         this.cartItems[existingItemIndex].quantity += quantity;
       } else {
         const newItem = {
-          productId: product.Id.toString(),
+          productId: productId,
           quantity,
           price: product.price,
           name: product.name,
