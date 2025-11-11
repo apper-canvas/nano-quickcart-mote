@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { cartService } from "@/services/api/cartService";
-import { useAuth } from "@/layouts/Root";
 import { useSelector } from "react-redux";
+import { useAuth } from "@/contexts/AuthContext";
+import { wishlistService } from "@/services/api/wishlistService";
+import WishlistDropdown from "@/components/organisms/WishlistDropdown";
+import { cartService } from "@/services/api/cartService";
+import { cn } from "@/utils/cn";
 import ApperIcon from "@/components/ApperIcon";
+import SearchBar from "@/components/molecules/SearchBar";
 import Button from "@/components/atoms/Button";
 import Badge from "@/components/atoms/Badge";
-import SearchBar from "@/components/molecules/SearchBar";
-import { cn } from "@/utils/cn";
 
 const LogoutButton = () => {
   const { logout } = useAuth();
@@ -28,14 +30,16 @@ const LogoutButton = () => {
 
 const Header = ({ className }) => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
+const [searchQuery, setSearchQuery] = useState("");
   const [cartItemCount, setCartItemCount] = useState(0);
+  const [wishlistItemCount, setWishlistItemCount] = useState(0);
+  const [showWishlistDropdown, setShowWishlistDropdown] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     loadCartCount();
-    
-    const handleStorageChange = () => {
+const handleStorageChange = () => {
+      loadWishlistCount();
       loadCartCount();
     };
 
@@ -51,7 +55,7 @@ const Header = ({ className }) => {
     };
   }, []);
 
-  const loadCartCount = async () => {
+const loadCartCount = async () => {
     try {
       const count = await cartService.getItemCount();
       setCartItemCount(count);
@@ -59,6 +63,29 @@ const Header = ({ className }) => {
       console.error("Error loading cart count:", error);
     }
   };
+
+  const loadWishlistCount = async () => {
+    try {
+      const items = await wishlistService.getAll();
+      setWishlistItemCount(items.length);
+    } catch (error) {
+      console.error("Error loading wishlist count:", error);
+    }
+  };
+
+  // Close wishlist dropdown when clicking outside
+  const handleClickOutside = (event) => {
+    if (!event.target.closest('.wishlist-dropdown-container')) {
+      setShowWishlistDropdown(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showWishlistDropdown) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showWishlistDropdown]);
 
   const handleSearch = (query) => {
     if (query.trim()) {
@@ -134,8 +161,34 @@ const Header = ({ className }) => {
                   {cartItemCount}
                 </Badge>
               )}
-            </Link>
+</Link>
 
+            {/* Wishlist Icon */}
+            <div className="relative wishlist-dropdown-container">
+              <button
+                onClick={() => setShowWishlistDropdown(!showWishlistDropdown)}
+                className="relative flex items-center hover:text-accent transition-colors duration-200"
+                aria-label="Wishlist"
+              >
+                <ApperIcon name="Heart" className="w-6 h-6" />
+                {wishlistItemCount > 0 && (
+                  <Badge 
+                    variant="primary" 
+                    size="sm" 
+                    className="absolute -top-2 -right-2"
+                  >
+                    {wishlistItemCount}
+                  </Badge>
+                )}
+              </button>
+              
+              {showWishlistDropdown && (
+                <WishlistDropdown 
+                  onClose={() => setShowWishlistDropdown(false)}
+                  onWishlistChange={loadWishlistCount}
+                />
+              )}
+            </div>
             <LogoutButton />
           </div>
 
@@ -144,6 +197,7 @@ const Header = ({ className }) => {
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden flex items-center gap-2 text-primary"
           >
+{/* Cart Icon */}
             <Link
               to="/cart"
               className="relative flex items-center"
@@ -196,6 +250,19 @@ const Header = ({ className }) => {
               className="block text-primary hover:text-accent font-medium transition-colors duration-200"
             >
               Orders
+            </Link>
+<Link
+              to="/wishlist"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center gap-2 text-primary hover:text-accent font-medium transition-colors duration-200"
+            >
+              <ApperIcon name="Heart" className="w-5 h-5" />
+              <span>Wishlist</span>
+              {wishlistItemCount > 0 && (
+                <Badge variant="primary" size="sm">
+                  {wishlistItemCount}
+                </Badge>
+              )}
             </Link>
 
             <Link

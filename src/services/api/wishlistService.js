@@ -1,6 +1,6 @@
 import { getApperClient } from '@/services/apperClient';
+import { productService } from './productService';
 import { toast } from 'react-toastify';
-
 export const wishlistService = {
   tableName: 'wishlist_items_c',
 
@@ -219,7 +219,42 @@ export const wishlistService = {
       return { success: true, message: 'Wishlist cleared' };
     } catch (error) {
       console.error("Error clearing wishlist:", error?.response?.data?.message || error.message);
-      return { success: false, message: 'Failed to clear wishlist' };
+return { success: false, message: 'Failed to clear wishlist' };
+    }
+  },
+
+  // Get wishlist items with complete product details
+  async getWishlistWithProducts() {
+    try {
+      const wishlistItems = await this.getAll();
+      
+      if (wishlistItems.length === 0) {
+        return [];
+      }
+
+      // Fetch product details for each wishlist item
+      const itemsWithProducts = await Promise.all(
+        wishlistItems.map(async (item) => {
+          try {
+            const product = await productService.getById(item.productId);
+            return {
+              ...item,
+              product: product || null
+            };
+          } catch (error) {
+            console.error(`Error fetching product ${item.productId}:`, error);
+            return {
+              ...item,
+              product: null
+            };
+          }
+        })
+      );
+
+      return itemsWithProducts;
+    } catch (error) {
+      console.error("Error fetching wishlist with products:", error?.response?.data?.message || error.message);
+      return [];
     }
   }
 };

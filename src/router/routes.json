@@ -36,6 +36,19 @@
       "redirectOnDeny": "/login"
     }
   },
+"/wishlist": {
+    "allow": {
+      "when": {
+        "conditions": [
+          {
+            "label": "Wishlist requires authentication",
+            "rule": "authenticated"
+          }
+        ]
+      },
+      "redirectOnDeny": "/login"
+    }
+  },
   "/checkout": {
     "allow": {
       "when": {

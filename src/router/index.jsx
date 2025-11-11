@@ -8,6 +8,7 @@ import { getRouteConfig } from "@/router/route.utils";
 const HomePage = lazy(() => import("@/components/pages/HomePage"));
 const ProductDetailPage = lazy(() => import("@/components/pages/ProductDetailPage"));
 const CartPage = lazy(() => import("@/components/pages/CartPage"));
+const WishlistPage = lazy(() => import("@/components/pages/WishlistPage"));
 const CheckoutPage = lazy(() => import("@/components/pages/CheckoutPage"));
 const OrderConfirmationPage = lazy(() => import("@/components/pages/OrderConfirmationPage"));
 const OrdersPage = lazy(() => import("@/components/pages/OrdersPage"));
@@ -73,6 +74,11 @@ const mainRoutes = [
   createRoute({
     path: "product/:id",
     element: <ProductDetailPage />
+}),
+  createRoute({
+    path: "/wishlist",
+    element: <WishlistPage />,
+    errorElement: <ErrorPage />,
   }),
   createRoute({
     path: "cart",
