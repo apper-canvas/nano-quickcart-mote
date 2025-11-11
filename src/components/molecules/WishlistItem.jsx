@@ -4,6 +4,7 @@ import { cn } from "@/utils/cn";
 import Button from "@/components/atoms/Button";
 import Badge from "@/components/atoms/Badge";
 import ApperIcon from "@/components/ApperIcon";
+import ConfirmationModal from "@/components/atoms/ConfirmationModal";
 import { wishlistService } from "@/services/api/wishlistService";
 import { cartService } from "@/services/api/cartService";
 import { toast } from "react-toastify";
@@ -14,6 +15,7 @@ const WishlistItem = ({ item, onWishlistUpdate }) => {
     buyNow: false,
     remove: false
   });
+  const [confirmDelete, setConfirmDelete] = useState({ show: false });
   const navigate = useNavigate();
 
   const product = item.product;
@@ -58,20 +60,29 @@ const WishlistItem = ({ item, onWishlistUpdate }) => {
     }
   };
 
-  const handleRemoveFromWishlist = async (e) => {
+const handleDeleteClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    
+    setConfirmDelete({ show: true });
+  };
+
+  const handleConfirmDelete = async () => {
     setLoadingState('remove', true);
     try {
       await wishlistService.remove(item.productId);
+      toast.success("Item removed from wishlist");
       onWishlistUpdate && onWishlistUpdate();
+      setConfirmDelete({ show: false });
     } catch (error) {
       toast.error("Failed to remove from wishlist");
       console.error("Error removing from wishlist:", error);
     } finally {
       setLoadingState('remove', false);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setConfirmDelete({ show: false });
   };
 
   const handleProductClick = () => {
@@ -96,9 +107,9 @@ const WishlistItem = ({ item, onWishlistUpdate }) => {
           <ApperIcon name="AlertCircle" size={48} className="mx-auto mb-2" />
           <p>Product information unavailable</p>
         </div>
-        <Button
+<Button
           variant="ghost"
-          onClick={handleRemoveFromWishlist}
+          onClick={handleDeleteClick}
           disabled={loading.remove}
           className="text-red-600 hover:text-red-800"
         >
@@ -120,8 +131,8 @@ const WishlistItem = ({ item, onWishlistUpdate }) => {
     >
       {/* Product Image */}
       <div className="relative aspect-square overflow-hidden">
-        <button
-          onClick={handleRemoveFromWishlist}
+<button
+          onClick={handleDeleteClick}
           disabled={loading.remove}
           className={cn(
             "absolute top-2 right-2 z-10 p-2 rounded-full",
@@ -224,7 +235,18 @@ const WishlistItem = ({ item, onWishlistUpdate }) => {
             Added {new Date(item.addedAt).toLocaleDateString()}
           </p>
         )}
-      </div>
+</div>
+      
+      <ConfirmationModal
+        isOpen={confirmDelete.show}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title="Remove from Wishlist"
+        message={`Are you sure you want to remove "${product?.name || 'this item'}" from your wishlist?`}
+        confirmText="Remove"
+        cancelText="Keep"
+        loading={loading.remove}
+      />
     </div>
   );
 };
