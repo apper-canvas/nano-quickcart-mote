@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/layouts/Root";
 import { wishlistService } from "@/services/api/wishlistService";
 import WishlistDropdown from "@/components/organisms/WishlistDropdown";
 import { cartService } from "@/services/api/cartService";
