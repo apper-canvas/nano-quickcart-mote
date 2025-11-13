@@ -5,7 +5,6 @@ import Button from "@/components/atoms/Button";
 import Loading from "@/components/ui/Loading";
 import Empty from "@/components/ui/Empty";
 import ApperIcon from "@/components/ApperIcon";
-import ConfirmationModal from "@/components/atoms/ConfirmationModal";
 import { wishlistService } from "@/services/api/wishlistService";
 import { cartService } from "@/services/api/cartService";
 import { toast } from "react-toastify";
@@ -15,7 +14,6 @@ const WishlistDropdown = ({ onClose, onWishlistChange }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [actionLoading, setActionLoading] = useState({});
-  const [confirmDelete, setConfirmDelete] = useState({ show: false, productId: null, productName: '' });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -66,12 +64,7 @@ const WishlistDropdown = ({ onClose, onWishlistChange }) => {
     }
   };
 
-const handleDeleteClick = (productId, productName) => {
-    setConfirmDelete({ show: true, productId, productName });
-  };
-
-  const handleConfirmDelete = async () => {
-    const { productId } = confirmDelete;
+  const handleRemoveFromWishlist = async (productId) => {
     const loadingKey = `remove-${productId}`;
     setActionLoading(prev => ({ ...prev, [loadingKey]: true }));
     
@@ -80,18 +73,12 @@ const handleDeleteClick = (productId, productName) => {
       const updatedItems = wishlistItems.filter(item => item.productId !== productId);
       setWishlistItems(updatedItems);
       onWishlistChange && onWishlistChange();
-      toast.success("Item removed from wishlist");
-      setConfirmDelete({ show: false, productId: null, productName: '' });
     } catch (error) {
       toast.error("Failed to remove from wishlist");
       console.error("Error removing from wishlist:", error);
     } finally {
       setActionLoading(prev => ({ ...prev, [loadingKey]: false }));
     }
-  };
-
-  const handleCancelDelete = () => {
-    setConfirmDelete({ show: false, productId: null, productName: '' });
   };
 
   const formatPrice = (price) => {
@@ -195,12 +182,8 @@ const handleDeleteClick = (productId, productName) => {
                       "Add to Cart"
                     )}
                   </Button>
-<button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleDeleteClick(item.productId, item.product?.name || 'this item');
-                    }}
+                  <button
+                    onClick={() => handleRemoveFromWishlist(item.productId)}
                     disabled={actionLoading[`remove-${item.productId}`]}
                     className="text-xs text-red-600 hover:text-red-800 transition-colors p-1"
                   >
@@ -215,18 +198,7 @@ const handleDeleteClick = (productId, productName) => {
             ))}
           </div>
         )}
-</div>
-      
-      <ConfirmationModal
-        isOpen={confirmDelete.show}
-        onClose={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
-        title="Remove from Wishlist"
-        message={`Are you sure you want to remove "${confirmDelete.productName}" from your wishlist?`}
-        confirmText="Remove"
-        cancelText="Keep"
-        loading={actionLoading[`remove-${confirmDelete.productId}`]}
-      />
+      </div>
     </div>
   );
 };
